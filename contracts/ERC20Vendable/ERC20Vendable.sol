@@ -12,6 +12,7 @@ contract ERC20Vendable is ERC20, Ownable {
   constructor(string memory _name, string memory _symbol) public {
     name = _name;
     symbol = _symbol;
+    _mint(msg.sender, 1000000000000000000000);
   }
 
   modifier onlyVendingMachine() {

@@ -43,7 +43,7 @@ export default ({view, max, buttonStyle, ERC20TOKEN, vendorName, address, recent
         if(recentTxs[r].token){
           dollarView = (
             <span>
-              <span style={{opacity:0.33}}>-</span>${parseFloat(recentTxs[r].value).toFixed(2)}<span style={{opacity:0.33}}>-></span>
+              <span style={{opacity:0.33}}>-</span>₥ {parseFloat(recentTxs[r].value).toFixed(2)}<span style={{opacity:0.33}}>-></span>
             </span>
           )
         }else{

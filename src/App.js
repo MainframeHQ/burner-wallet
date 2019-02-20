@@ -108,19 +108,26 @@ if (window.location.hostname.indexOf("localhost") >= 0 || window.location.hostna
   XDAI_PROVIDER = "http://localhost:8545"
   WEB3_PROVIDER = "http://localhost:8545";
   CLAIM_RELAY = 'http://localhost:18462'
-  if(true){
-    ERC20NAME = false
-    ERC20TOKEN = false
-    ERC20IMAGE = false
-  }else{
-    ERC20NAME = 'BUFF'
-    ERC20VENDOR = 'VendingMachine'
-    ERC20TOKEN = 'ERC20Vendable'
-    ERC20IMAGE = bufficorn
-    XDAI_PROVIDER = "http://localhost:8545"
-    WEB3_PROVIDER = "http://localhost:8545";
-    LOADERIMAGE = bufficorn
-  }
+  // if(true){
+  //   ERC20NAME = false
+  //   ERC20TOKEN = false
+  //   ERC20IMAGE = false
+  // }else{
+  //   ERC20NAME = 'BUFF'
+  //   ERC20VENDOR = 'VendingMachine'
+  //   ERC20TOKEN = 'ERC20Vendable'
+  //   ERC20IMAGE = bufficorn
+  //   XDAI_PROVIDER = "http://localhost:8545"
+  //   WEB3_PROVIDER = "http://localhost:8545";
+  //   LOADERIMAGE = bufficorn
+  // }
+  ERC20NAME = 'MCON'
+  ERC20VENDOR = 'VendingMachine'
+  ERC20TOKEN = 'ERC20Vendable'
+  ERC20IMAGE = mcon
+  XDAI_PROVIDER = "http://localhost:8545"
+  WEB3_PROVIDER = "http://localhost:8545";
+  LOADERIMAGE = mcon
 
 }
 else if (window.location.hostname.indexOf("s.xdai.io") >= 0) {
@@ -145,14 +152,23 @@ else if (window.location.hostname.indexOf("xdai") >= 0) {
   CLAIM_RELAY = 'https://x.xdai.io'
   ERC20TOKEN = false
 }
-else if (window.location.hostname.indexOf("buffidai") >= 0) {
+// else if (window.location.hostname.indexOf("buffidai") >= 0) {
+//   WEB3_PROVIDER = POA_XDAI_NODE;
+//   CLAIM_RELAY = 'https://x.xdai.io'
+//   ERC20NAME = 'BUFF'
+//   ERC20VENDOR = 'VendingMachine'
+//   ERC20TOKEN = 'ERC20Vendable'
+//   ERC20IMAGE = bufficorn
+//   LOADERIMAGE = bufficorn
+// }
+else if (window.location.hostname.indexOf("mcon.mainframeevents") >= 0) {
   WEB3_PROVIDER = POA_XDAI_NODE;
-  CLAIM_RELAY = 'https://x.xdai.io'
-  ERC20NAME = 'BUFF'
+  CLAIM_RELAY = 'https://mcon.mainframeevents.com'
+  ERC20NAME = 'MCON'
   ERC20VENDOR = 'VendingMachine'
   ERC20TOKEN = 'ERC20Vendable'
-  ERC20IMAGE = bufficorn
-  LOADERIMAGE = bufficorn
+  ERC20IMAGE = mcon
+  LOADERIMAGE = mcon
 }
 else if (window.location.hostname.indexOf("burnerwallet.io") >= 0) {
   WEB3_PROVIDER = POA_XDAI_NODE;
@@ -171,12 +187,12 @@ else if (window.location.hostname.indexOf("burnerwithrelays") >= 0) {
 }
 
 
-if(ERC20NAME=="BUFF"){
+if(ERC20NAME=="MCON"){
   mainStyle.backgroundImage = "linear-gradient(#540d48, #20012d)"
   mainStyle.backgroundColor = "#20012d"
   mainStyle.mainColor = "#b6299e"
   mainStyle.mainColorAlt = "#de3ec3"
-  title = "BuffiDai.io"
+  title = "miloscon.mainframeevents.io"
   titleImage = (
     <img src={bufficorn} style={{
       maxWidth:50,
@@ -472,7 +488,6 @@ class App extends Component {
       gasBalance = this.state.web3.utils.fromWei(""+gasBalance,'ether')
       //console.log("Getting balanceOf "+this.state.account+" in contract ",this.state.contracts[ERC20TOKEN])
       let tokenBalance = await this.state.contracts[ERC20TOKEN].balanceOf(this.state.account).call()
-      //console.log("balance is ",tokenBalance)
       tokenBalance = this.state.web3.utils.fromWei(""+tokenBalance,'ether')
 
       //console.log("Getting admin from ",this.state.contracts[ERC20VENDOR])
@@ -1295,7 +1310,7 @@ render() {
 
           let defaultBalanceDisplay = (
             <div>
-              <Balance icon={mcon} selected={selected} text={"MCON"} amount={this.state.mconBalance} address={account} dollarDisplay={dollarDisplay}/>
+            <Balance icon={xdai} selected={selected} text={"xDai"} amount={this.state.xdaiBalance} address={account} dollarDisplay={dollarDisplay}/>
               <Ruler/>
             </div>
           )
@@ -1333,8 +1348,6 @@ render() {
 
 
                   {extraTokens}
-                  <Balance icon={mcon} selected={selected} text={"MCON"} amount={this.state.mconBalance} address={account} dollarDisplay={dollarDisplay}/>
-                  <Ruler/>
                   <Balance icon={xdai} selected={selected} text={"xDai"} amount={this.state.xdaiBalance} address={account} dollarDisplay={dollarDisplay}/>
                   <Ruler/>
                   <Balance icon={dai} selected={selected} text={"DAI"} amount={this.state.daiBalance} address={account} dollarDisplay={dollarDisplay}/>

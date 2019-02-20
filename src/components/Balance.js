@@ -14,6 +14,8 @@ export  default ({icon, text, selected, amount, address, dollarDisplay}) => {
     opacity=0.25
   }
 
+  const symbol = text === 'MCON' ? '₥ ' : '$'
+
   return (
     <div className="balance row" style={{opacity,paddingBottom:0,paddingLeft:20}}>
       <div className="avatar col p-0">
@@ -25,7 +27,7 @@ export  default ({icon, text, selected, amount, address, dollarDisplay}) => {
       <div style={{position:"absolute",right:25,marginTop:15}}>
         <Scaler config={{startZoomAt:400,origin:"200px 30px",adjustedZoom:1}}>
           <div style={{fontSize:40,letterSpacing:-2}}>
-            ${dollarDisplay(amount)}
+            {symbol}{dollarDisplay(amount)}
           </div>
         </Scaler>
       </div>
