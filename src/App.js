@@ -43,18 +43,39 @@ import namehash from 'eth-ens-namehash'
 //https://github.com/lesnitsky/react-native-webview-messaging/blob/v1/examples/react-native/web/index.js
 import RNMessageChannel from 'react-native-webview-messaging';
 
-
 import bufficorn from './bufficorn.png';
 import cypherpunk from './cypherpunk.png';
 import eth from './ethereum.png';
 import dai from './dai.jpg';
 import xdai from './xdai.jpg';
+import mcon from './mcon.png';
 
 let base64url = require('base64url')
 const EthCrypto = require('eth-crypto');
 
 //const POA_XDAI_NODE = "https://dai-b.poa.network"
 const POA_XDAI_NODE = "https://dai.poa.network"
+
+const ERC20ABI = [
+  {
+    name: 'balanceOf',
+    outputs: [
+      {
+        name: 'balance',
+        type: 'uint',
+      },
+    ],
+    inputs: [
+      {
+        name: "_owner",
+        type: "address"
+      }
+    ],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  }
+]
 
 let XDAI_PROVIDER = POA_XDAI_NODE
 
@@ -385,13 +406,20 @@ class App extends Component {
     let mainnetweb3 = new Web3(new Web3.providers.WebsocketProvider('wss://mainnet.infura.io/ws/v3/e0ea6e73570246bbb3d4bd042c4b5dac'))
     let ensContract = new mainnetweb3.eth.Contract(require("./contracts/ENS.abi.js"),require("./contracts/ENS.address.js"))
     let daiContract
+    let mconContract
     try{
       daiContract = new mainnetweb3.eth.Contract(require("./contracts/StableCoin.abi.js"),"0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359")
     }catch(e){
       console.log("ERROR LOADING DAI Stablecoin Contract",e)
     }
-    let xdaiweb3 = new Web3(new Web3.providers.HttpProvider(XDAI_PROVIDER))
-    this.setState({mainnetweb3,ensContract,xdaiweb3,daiContract})
+    // TODO: revert to XDAI_PROVIDER
+    let xdaiweb3 = new Web3(new Web3.providers.HttpProvider(POA_XDAI_NODE))
+    try {
+      mconContract = new xdaiweb3.eth.Contract(ERC20ABI,"0xE2640b0d6352A76173D9A7D0EBEB6128b6dC3D81")
+    } catch (err) {
+      console.log("ERROR LOADING MCON Contract", err)
+    }
+    this.setState({mainnetweb3,ensContract,xdaiweb3,daiContract,mconContract})
   }
   componentWillUnmount() {
     clearInterval(interval)
@@ -488,6 +516,7 @@ class App extends Component {
       let ethBalance = 0.00
       let daiBalance = 0.00
       let xdaiBalance = 0.00
+      let mconBalance = 0.00
 
       if(this.state.mainnetweb3){
 
@@ -509,9 +538,11 @@ class App extends Component {
       if(this.state.xdaiweb3){
         xdaiBalance = await this.state.xdaiweb3.eth.getBalance(this.state.account)
         xdaiBalance = this.state.xdaiweb3.utils.fromWei(""+xdaiBalance,'ether')
+        mconBalance = await this.state.mconContract.methods.balanceOf(this.state.account).call()
+        mconBalance = this.state.xdaiweb3.utils.fromWei(""+mconBalance,'ether')
       }
 
-      this.setState({ethBalance,daiBalance,xdaiBalance,badgeBalance,hasUpdateOnce:true})
+      this.setState({ethBalance,daiBalance,xdaiBalance,mconBalance,badgeBalance,hasUpdateOnce:true})
     }
 
 
@@ -1034,7 +1065,7 @@ render() {
     )
   }
 
-  let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance)
+  let totalBalance = parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice) + parseFloat(this.state.daiBalance) + parseFloat(this.state.xdaiBalance) + parseFloat(this.state.mconBalance)
   if(ERC20TOKEN){
     totalBalance += parseFloat(this.state.balance)
   }
@@ -1259,12 +1290,12 @@ render() {
             )
           }
 
-          let selected = "xDai"
+          let selected = "MCON"
           let extraTokens = ""
 
           let defaultBalanceDisplay = (
             <div>
-              <Balance icon={xdai} selected={false} text={"xdai"} amount={this.state.xdaiBalance} address={account} dollarDisplay={dollarDisplay} />
+              <Balance icon={mcon} selected={selected} text={"MCON"} amount={this.state.mconBalance} address={account} dollarDisplay={dollarDisplay}/>
               <Ruler/>
             </div>
           )
@@ -1302,7 +1333,8 @@ render() {
 
 
                   {extraTokens}
-
+                  <Balance icon={mcon} selected={selected} text={"MCON"} amount={this.state.mconBalance} address={account} dollarDisplay={dollarDisplay}/>
+                  <Ruler/>
                   <Balance icon={xdai} selected={selected} text={"xDai"} amount={this.state.xdaiBalance} address={account} dollarDisplay={dollarDisplay}/>
                   <Ruler/>
                   <Balance icon={dai} selected={selected} text={"DAI"} amount={this.state.daiBalance} address={account} dollarDisplay={dollarDisplay}/>
